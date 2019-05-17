@@ -53,18 +53,22 @@ def get_bids_subject_input_files(subject_id, bids_input_directory):
 
     subjects_dir = op.join(bids_input_directory, 'derivatives', 'sub-'+subject_id)
 
+    metadata = layout.get_metadata(op.abspath(dwi_file[0]))
+
     if not op.exists(op.join(subjects_dir, 'freesurfer')):
-        raise NotImplementedError('we have not yet implemented a version of dmriprep that runs freesurfer for you.'
-                                  'please run freesurfer and try again'
-                                  )
+        raise NotImplementedError('We have not yet implemented a version of '
+                                  'dmriprep that runs freesurfer for you. '
+                                  'Please run freesurfer and try again')
 
     outputs = dict(subject_id="sub-"+subject_id,
                    dwi_file=dwi_file[0],
+                   dwi_metadata=metadata,
                    dwi_file_AP=ap_file[0].path if len(ap_file) and len(pa_file) else None,
                    dwi_file_PA=pa_file[0].path if len(ap_file) and len(pa_file) else None,
                    bvec_file=bvec_file[0],
                    bval_file=bval_file[0],
                    subjects_dir=op.abspath(subjects_dir))
+
     return outputs
 
 

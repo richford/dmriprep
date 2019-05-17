@@ -375,12 +375,16 @@ def run_dmriprep_no_pe_with_eddy(subject_id, dwi_file,
     wf.run()
 
 
-def get_dmriprep_base_workflow(use_reverse_phase_encode=True):
+def get_dmriprep_base_workflow(dwi_metadata, use_reverse_phase_encode=True):
     """Return the dmriprep (phase encoded) nipype workflow
 
     Parameters
     ----------
+    dwi_metadata : dict
+        Dictionary containing bids metadata for the DWI image
 
+    use_reverse_phase_encode : bool, default=True
+        If True, use the reverse phase encode workflow
 
     Returns
     -------
@@ -414,8 +418,11 @@ def get_dmriprep_base_workflow(use_reverse_phase_encode=True):
     ]), name="inputspec")
 
     # AK: watch out, other datasets might be encoded LR
-    epi_ap = {'echospacing': 66.5e-3, 'enc_dir': 'y-'}
-    epi_pa = {'echospacing': 66.5e-3, 'enc_dir': 'y'}
+    enc_dir = dwi_metadata["PhaseEncodingDirection"]
+    readout_time = dwi_metadata["TotalReadoutTime"]
+
+    epi_ap = {'echospacing': readout_time, 'enc_dir': 'y-'}
+    epi_pa = {'echospacing': readout_time, 'enc_dir': 'y'}
     prep = all_fsl_pipeline(epi_params=epi_ap, altepi_params=epi_pa)
 
     if not use_reverse_phase_encode:
